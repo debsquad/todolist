@@ -184,12 +184,12 @@ class EntryParser:
 
 
 if __name__ == "__main__":
-    pdb.set_trace()
     tdl = DbHandler(database_location)  # tdl is "todolist"
 
     # Test if database exists ; create otherwise.
-    if not Todo.db_exist():
-        Todo.create_db()
+    if not DbHandler.db_exist():
+        DbHandler.create_db()
+    pdb.set_trace()
 
    
     def prepare_to_add():
