@@ -155,7 +155,7 @@ class TodoParser:
                             action="store", type="string", dest="detail",
                             help="Detailled explication of the thing to do")
         parser.add_option("-i", "--id",
-                            action="store", type="integer", dest="id_entry",
+                            action="store", type="string", dest="id_entry",
                             help="id of entry you want to handle with")
         parser.add_option("-d", "--done",
                             action="store_true", dest="done", default=False,
@@ -186,16 +186,9 @@ class EntryParser:
 if __name__ == "__main__":
     tdl = DbHandler(database_location)  # tdl is "todolist"
 
-    # Test if database exists ; create otherwise.
-    todobase = DbHandler(database_location)
-    if not todobase.db_exist():
-        todobase.create_db()
-    pdb.set_trace()
-
-   
     def prepare_to_add():
         #TODO check user input with EntryParser.checkui()
-        DbHandler.add_entry(options)
+        todobase.add_entry(options)
 
 
     def add_or_update(options):
@@ -204,15 +197,24 @@ if __name__ == "__main__":
             If the user didn't specify id_entry, assume it's new todo to add
         """
         if options["id_entry"]:
-            if DbHandler.check_id_exists:
+            if todobase.check_id_exists:
                 #TODO
                 pass # prepare_to_update()
             raise IdError("Id {} doesn't exist in database"
                         .format(options["id_entry"]))
         prepare_to_add()
 
+
+    # Test if database exists ; create otherwise.
+
+    todobase = DbHandler(database_location)
+    if not todobase.db_exist():
+        todobase.create_db()
+
+   
     # start prog
     (options, args) = TodoParser()
+    pdb.set_trace()
     if options["list"]:
         #TODO
         pass # DbHandler.list_todo()
