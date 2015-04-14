@@ -183,7 +183,7 @@ class EntryParser:
         pass
 
 
-if __name__ = "__main__":
+if __name__ == "__main__":
     pdb.set_trace()
     tdl = DbHandler(database_location)  # tdl is "todolist"
 
