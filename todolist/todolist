@@ -91,8 +91,6 @@ class DbHandler:
         self.session = Session()
 
 
-
-
 class AddTodoCommand(DbHandler):
     """
         Adding new todo in database
@@ -118,13 +116,17 @@ class AddTodoCommand(DbHandler):
         except sqlalchemy.exc.IntegrityError:
             return False
 
+class ListTodoCommand(DbHandler):
+    pass
 
+class UpdateTodoCommand(DbHandler):
+    pass
 
 
 if __name__ == "__main__":
 
 
-    def get_parser(command_name, args):
+    def parse_args(command_name, args):
         parser = OptionParser(usage="%prog {}".format(command_name))
 
         parser.add_option("-e", "--endline", "--deadline",
@@ -158,7 +160,6 @@ if __name__ == "__main__":
        
         return options, args
  
-
     def prepare_to_add():
         #TODO check user input with EntryParser.checkui()
         todobase.add_entry(options)
@@ -180,20 +181,29 @@ if __name__ == "__main__":
     #
     # start prog
     #
-    # verify if command_name exists and is correct
+    # verify if command_name exists and is correct ; exit on error
     try:
         command_name = sys.argv[1]
-        if command_name not in ("add", "update", "list"):
+        commands = {
+            "add": AddTodoCommand,
+            "list": ListTodoCommand,
+            "update": UpdateTodoCommand,
+            }
+        try:
+            Command = commands[command_name]()
+        except KeyError:
             print("usage : todolist command [add, update, list]")
             sys.exit(16)
+        cmd = Command()
+        pdb.set_trace()
     except IndexError:
         print("usage : todolist command [add, update, list]")
         sys.exit(15)
     args = sys.argv[2:]
 
     
-
     # Start parsing args
-    (options, args) = get_parser(command_name, args)
-    
-    pdb.set_trace()
+    (options, args) = parse_args(command_name, args)
+   
+    # run command
+    cmd.run
