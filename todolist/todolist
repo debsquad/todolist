@@ -187,8 +187,9 @@ if __name__ == "__main__":
     tdl = DbHandler(database_location)  # tdl is "todolist"
 
     # Test if database exists ; create otherwise.
-    if not DbHandler.db_exist():
-        DbHandler.create_db()
+    todobase = DbHandler(database_location)
+    if not todobase.db_exist():
+        todobase.create_db()
     pdb.set_trace()
 
    
