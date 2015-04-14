@@ -139,7 +139,7 @@ class TodoParser:
     """ Parse userinput """
     def __init__(self):
         parser = OptionParser(usage="%prog" + ".\n")
-        parser.add_option("-d", "--deadline",
+        parser.add_option("-e", "--endline", "--deadline",
                             action="store", type="string", dest="deadline",
                             default=today,
                             help="Date of deadline ; format to YYMMDD")
