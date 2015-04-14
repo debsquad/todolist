@@ -57,7 +57,7 @@ default_genre="any"
 
 
 class Todo(Base):
-    __tablename__ = "todolist"
+    __tablename__ = "todo"
     id = Column(Integer, primary_key=True)
     timestamp = Column(DateTime, default=now) # datetime data enters in
     deadline = Column(Date, default=today)
@@ -76,7 +76,7 @@ class Todo(Base):
         self.done = data["done"]
 
     def __repr__(self):
-        return """<Model('{}','{}','{}','{}','{}','{}')>
+        return """<Todo('{}','{}','{}','{}','{}','{}')>
                 """.format(self.timestamp, self.deadline, self.genre,
                         self.subject, self.detail, self.done)
 
@@ -121,6 +121,42 @@ class DbHandler:
         """
         pass
 
+class TodoParser:
+    """ Parse userinput """
+    def __init__(self):
+        parser = OptionParser(usage="%prog" + ".\n")
+        parser.add_option("-d", "--deadline",
+                            action="store", type="string", dest="deadline",
+                            default=today,
+                            help="Date of deadline ; format to YYMMDD")
+        parser.add_option("-g", "--genre",
+                            action="store", type="string", dest="genre",
+                            default=default_genre,
+                            help="Type of todo entry ; may be book, film, program,\
+                            market... whatever !")
+        parser.add_option("-s", "--subject",
+                            action="store", type="string", dest="subject",
+                            help="Resume of the thing to do")
+        parser.add_option("-t", "--text", "--detail",
+                            action="store", type="string", dest="detail",
+                            help="Detailled explication of the thing to do")
+        parser.add_option("-i", "--id",
+                            action="store", type="integer", dest="id_entry",
+                            help="id of entry you want to handle with")
+        parser.add_option("-d", "--done",
+                            action="store_true", dest="done", default=False
+                            help="use this option if the thing to do was done")
+        parser.add_option("-u", "--undone",
+                            action="store_false", dest="done", default=True
+                            help"use this option if the thing needs to be done")
+        parser.add_option("--database",
+                            action="store", type="string", dest="database"
+                            help="use alternate database")
+        (options,args) = parser.parse_args()
+       
+        return options, args
+ 
+
 class EntryParser:
     """
     Parse user input if needed
@@ -141,38 +177,15 @@ if __name__ = "__main__":
     if not Todo.db_exist():
         Todo.create_db()
 
-    # Parse user input
-    parser = OptionParser(usage="%prog" + ".\n")
-    parser.add_option("-d", "--deadline",
-                        action="store", type="string", dest="deadline",
-                        default=today,
-                        help="Date of deadline ; format to YYMMDD")
-    parser.add_option("-g", "--genre",
-                        action="store", type="string", dest="genre",
-                        default=default_genre,
-                        help="Type of todo entry ; may be book, film, program,\
-                        market... whatever !")
-    parser.add_option("-s", "--subject",
-                        action="store", type="string", dest="subject",
-                        help="Resume of the thing to do")
-    parser.add_option("-t", "--text", "--detail",
-                        action="store", type="string", dest="detail",
-                        help="Detailled explication of the thing to do")
-    parser.add_option("-i", "--id",
-                        action="store", type="integer", dest="id_entry",
-                        help="id of entry you want to handle with")
-    parser.add_option("-d", "--done",
-                        action="store_true", dest="done", default=False
-                        help="use this option if the thing to do was done")
-    parser.add_option("-u", "--undone",
-                        action="store_false", dest="done", default=True
-                        help"use this option if the thing needs to be done")
-    parser.add_option("--database",
-                        action="store", type="string", dest="database"
-                        help="use alternate database")
-    (options,args) = parser.parse_args()
-    
-    
+   
+    def prepare_to_add():
+        entry_to_add = { "deadline": options["deadline"],
+                        "genre": options["genre"],
+                        "subject": options["subject"],
+                        "detail": options["detail"]
+                        }
+
+
     def add_or_update():
         """ Test if we're dealing with new entry or not
             If user want to update entry that doesn't exist, raise exception
@@ -180,10 +193,10 @@ if __name__ = "__main__":
         """
         if options["id_entry"]:
             if DbHandler.check_id_exists:
-                pass # DbHandler.update_entry()
+                pass # prepare_to_update()
             Raise IdError("Id {} doesn't exist in database"
                         .format(options["id_entry"])
-        pass # DbHandler.add_entry()
+        prepare_to_add()
 
     # start prog
     pass
