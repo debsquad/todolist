@@ -91,24 +91,7 @@ class DbHandler:
         self.session = Session()
 
 
-    def update_entry(self, d):
-        """ Update database entry """
-        #TODO
-        pass
-
-    def list_todo(self):
-        """ List todo in database """
-        #TODO
-        pass
-    
-    def del_entry(self, entry_id):
-        """ Tell database entry was done 
-            NOT USED
-        """
-        #TODO ?
-        pass
-
-class BaseCommand:
+class BaseCommand():
     def get_parser(self):
         return Option.Parser(usage="%prog {}".format(self.command_name))
 
@@ -149,7 +132,7 @@ class TodoParser(BaseCommand):
        
         return options, args
  
-class AddTodoEntry(BaseCommand, TodoParser, DbHandler):
+class AddTodoCommand(BaseCommand, TodoParser, DbHandler):
     """
         Adding new todo in database
     """
@@ -175,17 +158,6 @@ class AddTodoEntry(BaseCommand, TodoParser, DbHandler):
             return False
 
 
-
-class EntryParser:
-    """
-    Parse user input if needed
-    """
-    def __init__(self, userinput):
-        self.ui = userinput
-
-    def checkui(self):
-        """ check if userinput is in the right format"""
-        pass
 
 
 if __name__ == "__main__":
@@ -222,7 +194,9 @@ if __name__ == "__main__":
         sys.exit(15)
     args = sys.argv[2:]
 
+    
+
     # Start parsing args
     (options, args) = TodoParser.parse_args(args)
-    pdb.set_trace()
     
+    pdb.set_trace()
