@@ -95,14 +95,12 @@ class AddTodoCommand(DbHandler):
     """
         Adding new todo in database
     """
-
     command_name = "add"
 
     def __init__(self):
         self.values = {}
 
-    def run(self, args):
-        (options, args) = self.parse_args(args)
+    def run(self, options):
         self.values["deadline"] = options.deadline
         self.values["genre"] = options.genre.decode("utf_8")
         self.values["subject"] = options.subject.decode("utf_8")
@@ -187,15 +185,14 @@ if __name__ == "__main__":
         commands = {
             "add": AddTodoCommand,
             "list": ListTodoCommand,
-            "update": UpdateTodoCommand,
+            "update": UpdateTodoCommand
             }
         try:
-            Command = commands[command_name]()
+            Command = commands[command_name]
         except KeyError:
             print("usage : todolist command [add, update, list]")
             sys.exit(16)
         cmd = Command()
-        pdb.set_trace()
     except IndexError:
         print("usage : todolist command [add, update, list]")
         sys.exit(15)
@@ -206,4 +203,4 @@ if __name__ == "__main__":
     (options, args) = parse_args(command_name, args)
    
     # run command
-    cmd.run
+    cmd.run(options)
