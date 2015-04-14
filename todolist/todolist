@@ -97,20 +97,26 @@ class AddTodoCommand(DbHandler):
     """
     command_name = "add"
 
-    def __init__(self):
-        self.values = {}
+    def run(options):
+        def decodeutf(val):
+            if val is None:
+                return
+            else:
+                return val.decode("utf_8")
 
-    def run(self, options):
-        self.values["deadline"] = options.deadline
-        self.values["genre"] = options.genre.decode("utf_8")
-        self.values["subject"] = options.subject.decode("utf_8")
-        self.values["detail"] = options.detail.decode("utf_8")
-        self.values["done"] = options.done
+        values = {
+            "deadline" = options.deadline,
+            "genre" = decodeutf(options.genre),
+            "subject" = decodeutf(options.subject),
+            "detail" = decodeutf(options.detail),
+            "done" = options.done
+            }
+        pdb.set_trace()
         try:
-           new_entry = Todo(**self.values)
-           self.session.add(new_entry)
-           self.session.commit()
-           return True
+            new_entry = Todo(**values)
+            self.session.add(new_entry)
+            self.session.commit()
+            return True
         except sqlalchemy.exc.IntegrityError:
             return False
 
