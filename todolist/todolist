@@ -95,10 +95,12 @@ class DbHandler:
         locate db, test if correspond with table describe above
         Return False if doesn't
         """
+        #TODO ?
         return True
 
     def create_db(self):
         """Create database with database todolist pattern"""
+        #TODO ?
         pass
 
     def add_entry(self, d):
@@ -113,12 +115,19 @@ class DbHandler:
 
     def update_entry(self, d):
         """ Update database entry """
+        #TODO
+        pass
 
+    def list_todo(self):
+        """ List todo in database """
+        #TODO
+        pass
     
     def del_entry(self, entry_id):
         """ Tell database entry was done 
             NOT USED
         """
+        #TODO ?
         pass
 
 class TodoParser:
@@ -179,6 +188,7 @@ if __name__ = "__main__":
 
    
     def prepare_to_add():
+        #TODO
         entry_to_add = { "deadline": options["deadline"],
                         "genre": options["genre"],
                         "subject": options["subject"],
@@ -186,17 +196,24 @@ if __name__ = "__main__":
                         }
 
 
-    def add_or_update():
+    def add_or_update(options):
         """ Test if we're dealing with new entry or not
             If user want to update entry that doesn't exist, raise exception
             If the user didn't specify id_entry, assume it's new todo to add
         """
         if options["id_entry"]:
             if DbHandler.check_id_exists:
+                #TODO
                 pass # prepare_to_update()
             Raise IdError("Id {} doesn't exist in database"
                         .format(options["id_entry"])
         prepare_to_add()
 
     # start prog
-    pass
+    (options, args) = TodoParser()
+    if options["list"]:
+        #TODO
+        pass # DbHandler.list_todo()
+    else:
+        #TODO
+        pass # add_or_update(options)
