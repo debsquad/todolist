@@ -165,6 +165,19 @@ if __name__ = "__main__":
                         action="store", type="string", dest="database"
                         help="use alternate database")
     (options,args) = parser.parse_args()
-                        
+    
+    
+    def add_or_update():
+        """ Test if we're dealing with new entry or not
+            If user want to update entry that doesn't exist, raise exception
+            If the user didn't specify id_entry, assume it's new todo to add
+        """
+        if options["id_entry"]:
+            if DbHandler.check_id_exists:
+                pass # DbHandler.update_entry()
+            Raise IdError("Id {} doesn't exist in database"
+                        .format(options["id_entry"])
+        pass # DbHandler.add_entry()
+
     # start prog
     pass
