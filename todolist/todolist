@@ -207,7 +207,7 @@ if __name__ == "__main__":
                 #TODO
                 pass # prepare_to_update()
             raise IdError("Id {} doesn't exist in database"
-                        .format(options["id_entry"])
+                        .format(options["id_entry"]))
         prepare_to_add()
 
     # start prog
