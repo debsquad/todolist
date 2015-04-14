@@ -32,7 +32,7 @@ todolist.py return a string with :
 deadline ; subject of todo ; details ; (genre?) ;
 
 """
-
+import pdb
 
 import datetime
 import os
@@ -103,11 +103,16 @@ class DbHandler:
         #TODO ?
         pass
 
-    def add_entry(self, d):
+    def add_entry(self, options):
         """ Receive dictionnary with data to insert into database"""
+        self.values["deadline"] = options.deadline
+        self.values["genre"] = options.genre.decode("utf_8")
+        self.values["subject"] = options.subject.decode("utf_8")
+        self.values["detail"] = options.detail.decode("utf_8")
+        self.values["done"] = options.done
         try:
-           u = Todo(d)
-           self.session.add(u)
+           new_entry = Todo(**self.values)
+           self.session.add(new_entry)
            self.session.commit()
            return True
         except sqlalchemy.exc.IntegrityError:
@@ -173,13 +178,13 @@ class EntryParser:
     def __init__(self, userinput):
         self.ui = userinput
 
-    def _checkui(self):
+    def checkui(self):
         """ check if userinput is in the right format"""
         pass
 
 
 if __name__ = "__main__":
-
+    pdb.set_trace()
     tdl = DbHandler(database_location)  # tdl is "todolist"
 
     # Test if database exists ; create otherwise.
@@ -188,12 +193,8 @@ if __name__ = "__main__":
 
    
     def prepare_to_add():
-        #TODO
-        entry_to_add = { "deadline": options["deadline"],
-                        "genre": options["genre"],
-                        "subject": options["subject"],
-                        "detail": options["detail"]
-                        }
+        #TODO check user input with EntryParser.checkui()
+        DbHandler.add_entry(options)
 
 
     def add_or_update(options):
@@ -215,5 +216,5 @@ if __name__ = "__main__":
         #TODO
         pass # DbHandler.list_todo()
     else:
-        #TODO
-        pass # add_or_update(options)
+        #TODO 
+        add_or_update(options)
