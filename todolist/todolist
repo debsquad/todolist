@@ -162,7 +162,7 @@ class TodoParser:
                             help="use this option if the thing to do was done")
         parser.add_option("-u", "--undone",
                             action="store_false", dest="done", default=True,
-                            help"use this option if the thing needs to be done")
+                            help="use this option if the thing needs to be done")
         parser.add_option("--database",
                             action="store", type="string", dest="database",
                             help="use alternate database")
