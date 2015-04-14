@@ -1,0 +1,14 @@
+The todolist python script helps you handle a database of things to do.
+
+The todolist table is :
+id | timestamp | deadline | genre | subject | detail | done
+
+id : unique id primary key of database entry
+timestamp : date and time  of entry in the todolist
+deadline : date the thing to do must be done
+genre : keyword for letting you know which kind of thing is to do
+subject : little description of TODO
+detail : Detailled description of TODO
+done : Boolean ; if the thing to do was done or not
+
+
