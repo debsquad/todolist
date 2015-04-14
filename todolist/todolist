@@ -53,7 +53,7 @@ session = None
 
 now = datetime.datetime.now()
 today = datetime.datetime.today()
-defaultgenre="any"
+default_genre="any"
 
 
 class Model(Base):
