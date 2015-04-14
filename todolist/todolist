@@ -93,7 +93,7 @@ class AddTodoCommand:
     """
     command_name = "add"
 
-    def run(options):
+    def run(self, options):
         def decode_utf(val):
             if val is None:
                 return
@@ -110,8 +110,8 @@ class AddTodoCommand:
         pdb.set_trace()
         try:
             new_entry = Todo(**values)
-            self.session.add(new_entry)
-            self.session.commit()
+            session.add(new_entry)
+            session.commit()
             return True
         except sqlalchemy.exc.IntegrityError:
             return False
