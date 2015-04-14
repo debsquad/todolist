@@ -150,6 +150,9 @@ if __name__ = "__main__":
     parser.add_option("-u", "--undone",
                         action="store_false", dest="done", default=True
                         help"use this option if the thing needs to be done")
+    parser.add_option("--database",
+                        action="store", type="string", dest="database"
+                        help="use alternate database")
     (options,args) = parser.parse_args()
                         
 
