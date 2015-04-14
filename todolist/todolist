@@ -91,9 +91,9 @@ class DbHandler:
     def db_exist(self):
         """
         locate db, test if correspond with table describe above
-        Return False if 
+        Return False if doesn't
         """
-        pass
+        return True
 
     def create_db(self):
         """Create database with database todolist pattern"""
