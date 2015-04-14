@@ -49,7 +49,12 @@ from optparse import OptionParser
 
 database_location = os.path.join(os.path.expanduser("~") + ".todolist.sql")
 Base = declarative_base()
-session = None
+
+engine = create_engine("sqlite:///{}".format(database_location),
+                                 echo=False, convert_unicode=True)
+Base.metadata.create_all(engine)
+Session = sessionmaker(bind=engine)
+session = Session()
 
 
 now = datetime.datetime.now()
@@ -81,35 +86,26 @@ class Todo(Base):
                 """.format(self.timestamp, self.deadline, self.genre,
                         self.subject, self.detail, self.done)
 
-class DbHandler:
-
-    def __init__(self, database_location):
-        self.engine = create_engine("sqlite:///{}".format(database_location),
-                                            echo=False, convert_unicode=True)
-        Base.metadata.create_all(self.engine)
-        Session = sessionmaker(bind=self.engine)
-        self.session = Session()
-
-
-class AddTodoCommand(DbHandler):
+        
+class AddTodoCommand:
     """
         Adding new todo in database
     """
     command_name = "add"
 
     def run(options):
-        def decodeutf(val):
+        def decode_utf(val):
             if val is None:
                 return
             else:
                 return val.decode("utf_8")
 
         values = {
-            "deadline" = options.deadline,
-            "genre" = decodeutf(options.genre),
-            "subject" = decodeutf(options.subject),
-            "detail" = decodeutf(options.detail),
-            "done" = options.done
+            "deadline": options.deadline,
+            "genre": decode_utf(options.genre),
+            "subject": decode_utf(options.subject),
+            "detail": decode_utf(options.detail),
+            "done": options.done
             }
         pdb.set_trace()
         try:
@@ -120,10 +116,10 @@ class AddTodoCommand(DbHandler):
         except sqlalchemy.exc.IntegrityError:
             return False
 
-class ListTodoCommand(DbHandler):
+class ListTodoCommand:
     pass
 
-class UpdateTodoCommand(DbHandler):
+class UpdateTodoCommand:
     pass
 
 
@@ -164,24 +160,6 @@ if __name__ == "__main__":
        
         return options, args
  
-    def prepare_to_add():
-        #TODO check user input with EntryParser.checkui()
-        todobase.add_entry(options)
-
-
-    def add_or_update(options):
-        """ Test if we're dealing with new entry or not
-            If user want to update entry that doesn't exist, raise exception
-            If the user didn't specify id_entry, assume it's new todo to add
-        """
-        if options["id_entry"]:
-            if todobase.check_id_exists:
-                #TODO
-                pass # prepare_to_update()
-            raise IdError("Id {} doesn't exist in database"
-                        .format(options["id_entry"]))
-        prepare_to_add()
-
     #
     # start prog
     #
