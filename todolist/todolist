@@ -36,6 +36,7 @@ import pdb
 
 import datetime
 import os
+import sys
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -137,7 +138,7 @@ class DbHandler:
 
 class TodoParser:
     """ Parse userinput """
-    def __init__(self):
+    def parse_args(self, args):
         parser = OptionParser(usage="%prog" + ".\n")
         parser.add_option("-e", "--endline", "--deadline",
                             action="store", type="string", dest="deadline",
@@ -184,7 +185,6 @@ class EntryParser:
 
 
 if __name__ == "__main__":
-    tdl = DbHandler(database_location)  # tdl is "todolist"
 
     def prepare_to_add():
         #TODO check user input with EntryParser.checkui()
@@ -205,7 +205,13 @@ if __name__ == "__main__":
         prepare_to_add()
 
 
-    # Test if database exists ; create otherwise.
+     
+    try:
+        command_name = sys.argv[1]
+    except IndexError:
+        print("prog usage") #TODO
+        sys.exit(15)
+    args = sys.argv[2:]
 
     todobase = DbHandler(database_location)
     if not todobase.db_exist():
@@ -213,7 +219,7 @@ if __name__ == "__main__":
 
    
     # start prog
-    (options, args) = TodoParser()
+    (options, args) = TodoParser.parse_args(args)
     pdb.set_trace()
     if options["list"]:
         #TODO
