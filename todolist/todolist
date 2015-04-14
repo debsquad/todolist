@@ -91,15 +91,12 @@ class DbHandler:
         self.session = Session()
 
 
-class BaseCommand():
-    def get_parser(self):
-        return Option.Parser(usage="%prog {}".format(self.command_name))
 
-class TodoParser(BaseCommand):
+class TodoParser:
     """ Parse userinput """
 
-    def parse_args(self, args):
-        parser = self.get_parser()
+    def get_parser(self, command_name, args):
+        parser = Option.Parser(usage="%prog {}".format(command_name))
 
         parser.add_option("-e", "--endline", "--deadline",
                             action="store", type="string", dest="deadline",
@@ -132,7 +129,7 @@ class TodoParser(BaseCommand):
        
         return options, args
  
-class AddTodoCommand(BaseCommand, TodoParser, DbHandler):
+class AddTodoCommand(TodoParser, DbHandler):
     """
         Adding new todo in database
     """
@@ -197,6 +194,6 @@ if __name__ == "__main__":
     
 
     # Start parsing args
-    (options, args) = TodoParser.parse_args(args)
+    (options, args) = TodoParser.get_parser(command_name, args)
     
     pdb.set_trace()
