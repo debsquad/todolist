@@ -206,7 +206,7 @@ if __name__ == "__main__":
             if DbHandler.check_id_exists:
                 #TODO
                 pass # prepare_to_update()
-            Raise IdError("Id {} doesn't exist in database"
+            raise IdError("Id {} doesn't exist in database"
                         .format(options["id_entry"])
         prepare_to_add()
 
