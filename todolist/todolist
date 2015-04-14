@@ -46,7 +46,7 @@ from optparse import OptionParser
 
 
 
-database_location = os.path.join("os.path.expanduser("~")" + ".todolist.sql")
+database_location = os.path.join(os.path.expanduser("~") + ".todolist.sql")
 Base = declarative_base()
 session = None
 
