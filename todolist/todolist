@@ -85,7 +85,7 @@ class DbHandler:
                                             echo=False, convert_unicode=True)
         Base.metadata.create_all(self.engine)
         Session = sessionmaker(bind=self.engine)
-
+        self.session = Session()
 
 
     def db_exist(self):
@@ -101,13 +101,21 @@ class DbHandler:
 
     def add_entry(self, d):
         """ Receive dictionnary with data to insert into database"""
-        pass
+        try:
+           u = Model(d)
+           self.session.add(u)
+           self.session.commit()
+           return True
+        except sqlalchemy.exc.IntegrityError:
+            return False
 
     def del_entry(self, entry_id):
-        """Delete from database entry"""
+        """Tell database entry was done """
         pass
 
 if __name__ = "__main__":
+
+    tdl = DbHandler(database_location)  # tdl is "todolist"
 
     # Test if database exists ; create otherwise.
     if not Model.db_exist():
