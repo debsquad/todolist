@@ -42,15 +42,18 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Table, Column, Integer, String, Date, DateTime, Boolean
 
+from optparse import OptionParser
+
+
+
+database_location = os.path.join("os.path.expanduser("~")" + ".todolist.sql")
+Base = declarative_base()
+session = None
+
 
 now = datetime.datetime.now()
 today = datetime.datetime.today()
-
-database_location = os.path.join("os.path.expanduser("~")" + ".todolist.sql")
-
-Base = declarative_base()
-
-session = None
+defaultgenre="any"
 
 
 class Model(Base):
@@ -122,3 +125,31 @@ if __name__ = "__main__":
         Model.create_db()
 
     # Parse user input
+    parser = OptionParser(usage="%prog" + ".\n")
+    parser.add_option("-d", "--deadline",
+                        action="store", type="string", dest="deadline",
+                        default=today,
+                        help="Date of deadline ; format to YYMMDD")
+    parser.add_option("-g", "--genre",
+                        action="store", type="string", dest="genre",
+                        default=default_genre,
+                        help="Type of todo entry ; may be book, film, program,\
+                        market... whatever !")
+    parser.add_option("-s", "--subject",
+                        action="store", type="string", dest="subject",
+                        help="Resume of the thing to do")
+    parser.add_option("-t", "--text", "--detail",
+                        action="store", type="string", dest="detail",
+                        help="Detailled explication of the thing to do")
+    parser.add_option("-i", "--id",
+                        action="store", type="integer", dest="id_entry",
+                        help="id of entry you want to handle with")
+    parser.add_option("-d", "--done",
+                        action="store_true", dest="done", default=False
+                        help="use this option if the thing to do was done")
+    parser.add_option("-u", "--undone",
+                        action="store_false", dest="done", default=True
+                        help"use this option if the thing needs to be done")
+    (options,args) = parser.parse_args()
+                        
+
