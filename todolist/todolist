@@ -56,7 +56,7 @@ today = datetime.datetime.today()
 default_genre="any"
 
 
-class TodoList(Base):
+class Todo(Base):
     __tablename__ = "todolist"
     id = Column(Integer, primary_key=True)
     timestamp = Column(DateTime, default=now) # datetime data enters in
@@ -104,15 +104,21 @@ class DbHandler:
     def add_entry(self, d):
         """ Receive dictionnary with data to insert into database"""
         try:
-           u = TodoList(d)
+           u = Todo(d)
            self.session.add(u)
            self.session.commit()
            return True
         except sqlalchemy.exc.IntegrityError:
             return False
 
+    def update_entry(self, d):
+        """ Update database entry """
+
+    
     def del_entry(self, entry_id):
-        """Tell database entry was done """
+        """ Tell database entry was done 
+            NOT USED
+        """
         pass
 
 class EntryParser:
@@ -132,8 +138,8 @@ if __name__ = "__main__":
     tdl = DbHandler(database_location)  # tdl is "todolist"
 
     # Test if database exists ; create otherwise.
-    if not Model.db_exist():
-        Model.create_db()
+    if not Todo.db_exist():
+        Todo.create_db()
 
     # Parse user input
     parser = OptionParser(usage="%prog" + ".\n")
