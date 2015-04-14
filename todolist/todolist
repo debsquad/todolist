@@ -92,11 +92,40 @@ class DbHandler:
 
 
 
-class TodoParser:
-    """ Parse userinput """
 
-    def get_parser(self, command_name, args):
-        parser = Option.Parser(usage="%prog {}".format(command_name))
+class AddTodoCommand(DbHandler):
+    """
+        Adding new todo in database
+    """
+
+    command_name = "add"
+
+    def __init__(self):
+        self.values = {}
+
+    def run(self, args):
+        (options, args) = self.parse_args(args)
+        self.values["deadline"] = options.deadline
+        self.values["genre"] = options.genre.decode("utf_8")
+        self.values["subject"] = options.subject.decode("utf_8")
+        self.values["detail"] = options.detail.decode("utf_8")
+        self.values["done"] = options.done
+        try:
+           new_entry = Todo(**self.values)
+           self.session.add(new_entry)
+           self.session.commit()
+           return True
+        except sqlalchemy.exc.IntegrityError:
+            return False
+
+
+
+
+if __name__ == "__main__":
+
+
+    def get_parser(command_name, args):
+        parser = OptionParser(usage="%prog {}".format(command_name))
 
         parser.add_option("-e", "--endline", "--deadline",
                             action="store", type="string", dest="deadline",
@@ -129,35 +158,6 @@ class TodoParser:
        
         return options, args
  
-class AddTodoCommand(TodoParser, DbHandler):
-    """
-        Adding new todo in database
-    """
-
-    command_name = "add"
-
-    def __init__(self):
-        self.values = {}
-
-    def run(self, args):
-        (options, args) = self.parse_args(args)
-        self.values["deadline"] = options.deadline
-        self.values["genre"] = options.genre.decode("utf_8")
-        self.values["subject"] = options.subject.decode("utf_8")
-        self.values["detail"] = options.detail.decode("utf_8")
-        self.values["done"] = options.done
-        try:
-           new_entry = Todo(**self.values)
-           self.session.add(new_entry)
-           self.session.commit()
-           return True
-        except sqlalchemy.exc.IntegrityError:
-            return False
-
-
-
-
-if __name__ == "__main__":
 
     def prepare_to_add():
         #TODO check user input with EntryParser.checkui()
@@ -194,6 +194,6 @@ if __name__ == "__main__":
     
 
     # Start parsing args
-    (options, args) = TodoParser.get_parser(command_name, args)
+    (options, args) = get_parser(command_name, args)
     
     pdb.set_trace()
