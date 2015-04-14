@@ -125,8 +125,8 @@ class TodoParser(BaseCommand):
         parser.add_option("-g", "--genre",
                             action="store", type="string", dest="genre",
                             default=default_genre,
-                            help="Type of todo entry ; may be book, film, program,\
-                            market... whatever !")
+                            help="Type of todo entry ; may be book, film, \
+                            program, market... whatever !")
         parser.add_option("-s", "--subject",
                             action="store", type="string", dest="subject",
                             help="Resume of the thing to do")
@@ -141,7 +141,7 @@ class TodoParser(BaseCommand):
                             help="use this option if the thing to do was done")
         parser.add_option("-u", "--undone",
                             action="store_false", dest="done", default=True,
-                            help="use this option if the thing needs to be done")
+                            help="use this opt if the thing needs to be done")
         parser.add_option("--database",
                             action="store", type="string", dest="database",
                             help="use alternate database")
@@ -208,23 +208,21 @@ if __name__ == "__main__":
                         .format(options["id_entry"]))
         prepare_to_add()
 
-
-     
+    #
+    # start prog
+    #
+    # verify if command_name exists and is correct
     try:
         command_name = sys.argv[1]
+        if command_name not in ("add", "update", "list"):
+            print("usage : todolist command [add, update, list]")
+            sys.exit(16)
     except IndexError:
-        print("prog usage") #TODO
+        print("usage : todolist command [add, update, list]")
         sys.exit(15)
     args = sys.argv[2:]
 
-    todobase = DbHandler(database_location)
-   
-    # start prog
+    # Start parsing args
     (options, args) = TodoParser.parse_args(args)
     pdb.set_trace()
-    if options["list"]:
-        #TODO
-        pass # DbHandler.list_todo()
-    else:
-        #TODO 
-        add_or_update(options)
+    
