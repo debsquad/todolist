@@ -158,13 +158,13 @@ class TodoParser:
                             action="store", type="integer", dest="id_entry",
                             help="id of entry you want to handle with")
         parser.add_option("-d", "--done",
-                            action="store_true", dest="done", default=False
+                            action="store_true", dest="done", default=False,
                             help="use this option if the thing to do was done")
         parser.add_option("-u", "--undone",
-                            action="store_false", dest="done", default=True
+                            action="store_false", dest="done", default=True,
                             help"use this option if the thing needs to be done")
         parser.add_option("--database",
-                            action="store", type="string", dest="database"
+                            action="store", type="string", dest="database",
                             help="use alternate database")
         (options,args) = parser.parse_args()
        
