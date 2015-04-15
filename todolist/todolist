@@ -42,8 +42,8 @@ import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Table, Column, Integer, String, Boolean, DateTime
-from sqlalchemy import desc, and_
+from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from sqlalchemy import and_
 
 from optparse import OptionParser
 
@@ -56,7 +56,7 @@ today = datetime.date.today()
 start_of_today = datetime.datetime(int(today.isoformat()[0:4]),
                                     int(today.isoformat()[5:7]),
                                     int(today.isoformat()[8:]),
-                                    00,00,01)
+                                    00,00,1)
 end_of_today = datetime.datetime(int(today.isoformat()[0:4]),
                                 int(today.isoformat()[5:7]),
                                 int(today.isoformat()[8:]),
