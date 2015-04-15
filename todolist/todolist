@@ -122,15 +122,20 @@ class ListTodoCommand:
 
     def run(self, session, options):
         query = session.query(Todo)
-        # grep genre to list if needed
+
+        # list only todos that are DONE
+        if options.done:
+            query = query.filter(Todo.done == True)
+
+        # list only todos with a genre
         if options.genre:
             query = query.filter(Todo.genre == options.genre)
+
         query = query.order_by(Todo.deadline)
         query = query.all()
         for u in query:
             print("{}, {}, {}, {}, {}".format(u.id, u.deadline, u.genre, 
                                         u.subject, u.text))
-
 
 
 class UpdateTodoCommand:
