@@ -57,7 +57,7 @@ endoftoday = datetime.datetime(int(today.isoformat()[0:4]),
                                 int(today.isoformat()[5:7]),
                                 int(today.isoformat()[8:]),
                                 23,59,59)
-default_genre="default"
+default_genre = "default"
 
 
 class Todo(Base):
@@ -92,6 +92,8 @@ class AddTodoCommand:
     command_name = "add"
 
     def run(self, session, options):
+        if not options.genre:
+            options.genre = default_genre.decode("utf_8")
 
         values = {
             "deadline": options.deadline,
@@ -120,12 +122,10 @@ class ListTodoCommand:
 
     def run(self, session, options):
         query = session.query(Todo)
+        # grep genre to list if needed
+        if options.genre:
+            query = query.filter(Todo.genre == options.genre)
         query = query.order_by(Todo.deadline)
-        try:
-            if options.genre:
-                query = query.filter(Todo.genre == options.genre)
-        except AttributeError:
-            pass
         query = query.all()
         for u in query:
             print("{}, {}, {}, {}, {}".format(u.id, u.deadline, u.genre, 
@@ -168,7 +168,6 @@ if __name__ == "__main__":
 
         parser.add_option("-g", "--genre",
                             action="store", type="string", dest="genre",
-                            default=default_genre,
                             help="Type of todo entry ; may be book, film, \
                             program, market... whatever !")
         parser.add_option("-D", "--done",
@@ -188,8 +187,6 @@ if __name__ == "__main__":
     def process_userinput(ui):
         def _check_date(val):
             msg = "Date must be in format [YY]YYMMDD[-hh[mm[ss]]] ; deadline default to today 23:59:59"
-            if not val:
-                return
             try:
                 if len(list(val)) == 6:                     # format YYMMDD
                     val = datetime.datetime(
@@ -232,6 +229,8 @@ if __name__ == "__main__":
                 else:
                     print(msg)
                     return
+            except TypeError:
+                return val
             except ValueError:
                 print(msg)
                 return
@@ -243,23 +242,28 @@ if __name__ == "__main__":
                 return val.decode("utf_8")
 
         try:
-            ui.deadline = _check_date(ui.deadline)
+            if ui.deadline:
+                ui.deadline = _check_date(ui.deadline)
         except AttributeError:
             pass
         try:
-            ui.genre = _decode_utf(ui.genre)
+            if ui.genre:
+                ui.genre = _decode_utf(ui.genre)
         except AttributeError:
             pass
         try:
-            ui.subject = _decode_utf(ui.subject)
+            if ui.subject:
+                ui.subject = _decode_utf(ui.subject)
         except AttributeError:
             pass
         try:
-            ui.text = _decode_utf(ui.text)
+            if ui.text:
+                ui.text = _decode_utf(ui.text)
         except AttributeError:
             pass
         try:
-            ui.id_entry = int(ui.id_entry)
+            if ui.id_entry:
+                ui.id_entry = int(ui.id_entry)
         except AttributeError:
             pass
             
