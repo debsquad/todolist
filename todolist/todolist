@@ -188,7 +188,7 @@ if __name__ == "__main__":
             try:
                 if len(list(val)) == 6:                     # format YYMMDD
                     val = datetime.datetime(
-                        int(val[0:2]),int(val[2:4]),int(val[4:]),23,59,59)
+                        int("20" + val[0:2]),int(val[2:4]),int(val[4:]),23,59,59)
                     return val
                 elif len(list(val)) == 8:                   # format YYYYMMDD
                     val = datetime.datetime(
@@ -196,17 +196,17 @@ if __name__ == "__main__":
                     return val
                 elif len(list(val)) == 9 and val[6] == "-": # format YYMMDD-hh
                     val = datetime.datetime(
-                        int(val[0:2]),int(val[2:4]),int(val[4:6]),
+                        int("20" + val[0:2]),int(val[2:4]),int(val[4:6]),
                         int(val[7:]),59,59)
                     return val
                 elif len(list(val)) == 11 and val[6] == "-": # format YYMMDD-hhmm
                     val = datetime.datetime(
-                        int(val[0:2]),int(val[2:4]),int(val[4:6]),
+                        int("20" + val[0:2]),int(val[2:4]),int(val[4:6]),
                         int(val[7:9]),int(val[9:]),59)
                     return val
                 elif len(list(val)) == 13 and val[6] == "-": # format YYMMDD-hhmmss
                     val = datetime.datetime(
-                        int(val[0:2]),int(val[2:4]),int(val[4:6]),
+                        int("20" + val[0:2]),int(val[2:4]),int(val[4:6]),
                         int(val[7:9]),int(val[9:11]),int(val[11:]))
                     return val
                 elif len(list(val)) == 11 and val[8] == "-": # format YYYYMMDD-hh
