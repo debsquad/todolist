@@ -47,7 +47,7 @@ from optparse import OptionParser
 
 
 
-database_location = os.path.join(os.path.expanduser("~") + ".todolist.sql")
+database_location = os.path.join(os.path.expanduser("~") + "todotest.sql")
 Base = declarative_base()
 
 engine = create_engine("sqlite:///{}".format(database_location),
@@ -216,12 +216,10 @@ if __name__ == "__main__":
             else:
                 return val.decode("utf_8")
 
-        pdb.set_trace()        
-        ui["deadline"] = _check_date(ui.deadline)
-        ui["genre"] = _decode_utf(ui.genre)
-        ui["subject"] = _decode_utf(ui.subject)
-        ui["text"] = _decode_utf(ui.text)
-        pdb.set_trace()
+        ui.deadline = _check_date(ui.deadline)
+        ui.genre = _decode_utf(ui.genre)
+        ui.subject = _decode_utf(ui.subject)
+        ui.text = _decode_utf(ui.text)
         return ui
 
 
