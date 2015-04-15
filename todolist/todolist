@@ -43,6 +43,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Table, Column, Integer, String, Boolean, DateTime
+from sqlalchemy import desc
 
 from optparse import OptionParser
 
@@ -115,10 +116,16 @@ class ListTodoCommand:
         List genre asked ; if None, list all genres
     """
     command_name = "list"
+    
 
     def run(self, session, options):
-        pdb.set_trace()
-        pass 
+        query = session.query(Todo)
+        query = query.order_by(Todo.deadline)
+        query = query.all()
+        for u in query:
+            print("{}, {}, {}, {}, {}".format(u.id, u.deadline, u.genre, 
+                                        u.subject, u.text))
+
 
 
 class UpdateTodoCommand:
