@@ -130,6 +130,10 @@ class ListTodoCommand:
         # list only todos with a genre
         if options.genre:
             query = query.filter(Todo.genre == options.genre)
+        
+        # list only todos that deadline hasn't passed (default)
+        if not options.alldates:
+            query = query.filter(Todo.deadline > datetime.datetime.now())
 
         query = query.order_by(Todo.deadline)
         query = query.all()
@@ -164,12 +168,20 @@ if __name__ == "__main__":
                                 action="store", type="string", dest="text",
                                 help="Detailled explication of the thing to do")
 
+        def list_args():
+            parser.add_option("-a", "--all", "--alldates",
+                                action="store_true", dest="alldates", 
+                                default=False,
+                                help="use this to show all todos, even those with deadline passed")
+
         parser = OptionParser(usage="%prog {}".format(command_name))
         if command_name == "add":
             add_update_args()
         if command_name == "update":
             update_args()
             add_update_args()
+        if command_name == "list":
+            list_args()
 
         parser.add_option("-g", "--genre",
                             action="store", type="string", dest="genre",
