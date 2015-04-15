@@ -117,6 +117,8 @@ class ListTodoCommand:
         # list only todos that are DONE
         if options.done:
             query = query.filter(Todo.done == True)
+        else:
+            query = query.filter(Todo.done == False)
 
         # list only todos with a genre
         if options.genre:
