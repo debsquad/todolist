@@ -225,8 +225,37 @@ if __name__ == "__main__":
  
     def process_userinput(ui):
         def _check_date(val):
-            msg = "Date must be in format [YY]YYMMDD[-hh[mm[ss]]] ; deadline default to today 23:59:59"
+            msg = "Date must be in format [[[YY]YY]MM]DD[-hh[mm[ss]]] ; deadline default to today 23:59:59"
             try:
+                year = int(datetime.date.today().year)
+                nextyear = int(datetime.date.today().year + 1)
+                month = int(datetime.date.today().month)
+                nextmonth = int(datetime.date.today().month + 1)
+
+                if len(list(val)) == 2:                     # format DD
+                    pdb.set_trace()
+                    if int(datetime.date.today().day) > int(val[0:]) and \
+                                datetime.date.today().month() == "12":
+                        val = datetime.datetime(
+                            nextyear, 1, int(val[0:]), 23, 59, 59)
+                    elif int(datetime.date.today().day) > int(val[0:]):
+                        pdb.set_trace()
+                        val = datetime.datetime(
+                            year, nextmonth, int(val[0:]), 23, 59, 59)
+                    else:
+                        val = datetime.datetime(
+                            year, month, int(val[0:]), 23, 59, 59)
+                    pdb.set_trace()
+                    return val
+                if len(list(val)) == 4:                     # format MMDD
+                    if int(datetime.date.today().day) >= int(val[2:]) and\
+                            int(datetime.date.today().month) == int(val[0:2]):
+                        val = datetime.datetime(
+                            nextyear, int(val[0:2]), int(val[2:]), 23, 59, 59)
+                    else:
+                        val = datetime.datetime(
+                            year, int(val[0:2]), int(val[2:]), 23, 59, 59)
+                    return val
                 if len(list(val)) == 6:                     # format YYMMDD
                     val = datetime.datetime(
                         int("20" + val[0:2]),int(val[2:4]),int(val[4:]),23,59,59)
