@@ -120,7 +120,8 @@ class ListTodoCommand:
 
         # list only todos with a genre
         if options.genre:
-            query = query.filter(Todo.genre == options.genre)
+            genre = "%{}%".format(options.genre)
+            query = query.filter(Todo.genre.ilike(genre))
         
         # list only todos that deadline hasn't passed (default)
         if not options.all_dates:
