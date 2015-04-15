@@ -131,8 +131,10 @@ class ListTodoCommand:
         query = query.order_by(Todo.deadline)
         query = query.all()
         for u in query:
-            print("{}, {}, {}, {}, {}".format(u.id, u.deadline, u.genre, 
-                                        u.subject, u.text))
+            print("{}, {}, {}, {}, {}".format(u.id, u.deadline, 
+                                                u.genre.encode("utf_8"),
+                                                u.subject.encode("utf_8"),
+                                                u.text.encode("utf_8")))
 
 
 class UpdateTodoCommand:
