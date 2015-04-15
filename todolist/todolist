@@ -134,8 +134,10 @@ class ListTodoCommand:
         query = query.order_by(Todo.deadline)
         query = query.all()
         for u in query:
-            print("{}, {}, {}, {}, {}".format(u.id, u.deadline, u.genre, 
-                                        u.subject, u.text))
+            print("{}, {}, {}, {}, {}".format(u.id, u.deadline, 
+                                                u.genre.encode("utf_8"),
+                                                u.subject.encode("utf_8"),
+                                                u.text.encode("utf_8")))
 
 
 class UpdateTodoCommand:
@@ -340,7 +342,7 @@ if __name__ == "__main__":
     if options.database:
         database_location = options.database
     else:
-        database_location = os.path.join(os.path.expanduser("~") + "/todotest.sql")
+        database_location = os.path.join(os.path.expanduser("~") + "/.todotest.sql")
     engine = create_engine("sqlite:///{}".format(database_location),
                                  echo=False, convert_unicode=True)
     Base.metadata.create_all(engine)
