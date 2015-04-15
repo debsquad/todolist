@@ -41,6 +41,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Table, Column, Integer, String, Boolean, DateTime
+from sqlalchemy import desc, and_
 
 from optparse import OptionParser
 
@@ -50,18 +51,22 @@ Base = declarative_base()
 
 now = datetime.datetime.now()
 today = datetime.date.today()
-endoftoday = datetime.datetime(int(today.isoformat()[0:4]),
+start_of_today = datetime.datetime(int(today.isoformat()[0:4]),
+                                    int(today.isoformat()[5:7]),
+                                    int(today.isoformat()[8:]),
+                                    00,00,01)
+end_of_today = datetime.datetime(int(today.isoformat()[0:4]),
                                 int(today.isoformat()[5:7]),
                                 int(today.isoformat()[8:]),
                                 23,59,59)
-default_genre="any"
+default_genre = "default"
 
 
 class Todo(Base):
     __tablename__ = "todo"
     id = Column(Integer, primary_key=True)
     timestamp = Column(DateTime, default=now) # datetime data enters in
-    deadline = Column(DateTime, default=endoftoday)
+    deadline = Column(DateTime, default=end_of_today)
     genre = Column(String, default="")
     subject = Column(String, default="")
     text = Column(String, default="")
@@ -75,6 +80,8 @@ class AddTodoCommand:
     command_name = "add"
 
     def run(self, session, options):
+        if not options.genre:
+            options.genre = default_genre.decode("utf_8")
 
         values = {
             "deadline": options.deadline,
@@ -92,7 +99,41 @@ class AddTodoCommand:
             return False
 
 class ListTodoCommand:
-    pass
+    """
+        Return (or print) the things to do
+        Begin with things undone which deadline is passed
+        Then order by deadline
+        List genre asked ; if None, list all genres
+    """
+    command_name = "list"
+    
+
+    def run(self, session, options):
+        query = session.query(Todo)
+
+        # list only todos that are DONE
+        if options.done:
+            query = query.filter(Todo.done == True)
+
+        # list only todos with a genre
+        if options.genre:
+            query = query.filter(Todo.genre == options.genre)
+        
+        # list only todos that deadline hasn't passed (default)
+        if not options.all_dates:
+            # list only today's todos if user wants
+            if options.list_today:
+                query = query.filter(and_(start_of_today <= Todo.deadline,
+                                            Todo.deadline <= end_of_today ))
+            else:
+                query = query.filter(Todo.deadline > datetime.datetime.now())
+
+        query = query.order_by(Todo.deadline)
+        query = query.all()
+        for u in query:
+            print("{}, {}, {}, {}, {}".format(u.id, u.deadline, u.genre, 
+                                        u.subject, u.text))
+
 
 class UpdateTodoCommand:
     pass
@@ -102,26 +143,46 @@ if __name__ == "__main__":
 
 
     def parse_args(command_name, args):
-        parser = OptionParser(usage="%prog {}".format(command_name))
 
-        parser.add_option("-d", "--deadline",
-                            action="store", type="string", dest="deadline",
-                            default=endoftoday,
-                            help="Date of deadline ; format to [YY]YYMMDD[-hh[mm[ss]]]")
+        def update_args():
+            parser.add_option("-i", "--id",
+                                action="store", type="string", dest="id_entry",
+                                help="id of entry you want to handle with")
+
+        def add_update_args():
+            parser.add_option("-d", "--deadline",
+                                action="store", type="string", dest="deadline",
+                                default=end_of_today,
+                                help="Date of deadline ; format to [YY]YYMMDD[-hh[mm[ss]]]")
+            parser.add_option("-s", "--subject",
+                                action="store", type="string", dest="subject",
+                                help="Resume of the thing to do")
+            parser.add_option("-t", "--text",
+                                action="store", type="string", dest="text",
+                                help="Detailled explication of the thing to do")
+
+        def list_args():
+            parser.add_option("-a", "--all", "--alldates",
+                                action="store_true", dest="all_dates", 
+                                default=False,
+                                help="use this to show all todos, even those with deadline passed")
+            parser.add_option("-t", "--today", action="store_true",
+                                dest="list_today", default=False,
+                                help="List only todos that ends today")
+
+        parser = OptionParser(usage="%prog {}".format(command_name))
+        if command_name == "add":
+            add_update_args()
+        if command_name == "update":
+            update_args()
+            add_update_args()
+        if command_name == "list":
+            list_args()
+
         parser.add_option("-g", "--genre",
                             action="store", type="string", dest="genre",
-                            default=default_genre,
                             help="Type of todo entry ; may be book, film, \
                             program, market... whatever !")
-        parser.add_option("-s", "--subject",
-                            action="store", type="string", dest="subject",
-                            help="Resume of the thing to do")
-        parser.add_option("-t", "--text",
-                            action="store", type="string", dest="text",
-                            help="Detailled explication of the thing to do")
-        parser.add_option("-i", "--id",
-                            action="store", type="string", dest="id_entry",
-                            help="id of entry you want to handle with")
         parser.add_option("-D", "--done",
                             action="store_true", dest="done", default=False,
                             help="use this option if the thing to do was done")
@@ -131,6 +192,7 @@ if __name__ == "__main__":
         parser.add_option("--database",
                             action="store", type="string", dest="database",
                             help="use alternate database")
+        
         (options,args) = parser.parse_args(args)
        
         return options, args
@@ -138,12 +200,10 @@ if __name__ == "__main__":
     def process_userinput(ui):
         def _check_date(val):
             msg = "Date must be in format [YY]YYMMDD[-hh[mm[ss]]] ; deadline default to today 23:59:59"
-            if not val:
-                return
             try:
                 if len(list(val)) == 6:                     # format YYMMDD
                     val = datetime.datetime(
-                        int(val[0:2]),int(val[2:4]),int(val[4:]),23,59,59)
+                        int("20" + val[0:2]),int(val[2:4]),int(val[4:]),23,59,59)
                     return val
                 elif len(list(val)) == 8:                   # format YYYYMMDD
                     val = datetime.datetime(
@@ -151,17 +211,17 @@ if __name__ == "__main__":
                     return val
                 elif len(list(val)) == 9 and val[6] == "-": # format YYMMDD-hh
                     val = datetime.datetime(
-                        int(val[0:2]),int(val[2:4]),int(val[4:6]),
+                        int("20" + val[0:2]),int(val[2:4]),int(val[4:6]),
                         int(val[7:]),59,59)
                     return val
                 elif len(list(val)) == 11 and val[6] == "-": # format YYMMDD-hhmm
                     val = datetime.datetime(
-                        int(val[0:2]),int(val[2:4]),int(val[4:6]),
+                        int("20" + val[0:2]),int(val[2:4]),int(val[4:6]),
                         int(val[7:9]),int(val[9:]),59)
                     return val
                 elif len(list(val)) == 13 and val[6] == "-": # format YYMMDD-hhmmss
                     val = datetime.datetime(
-                        int(val[0:2]),int(val[2:4]),int(val[4:6]),
+                        int("20" + val[0:2]),int(val[2:4]),int(val[4:6]),
                         int(val[7:9]),int(val[9:11]),int(val[11:]))
                     return val
                 elif len(list(val)) == 11 and val[8] == "-": # format YYYYMMDD-hh
@@ -182,6 +242,8 @@ if __name__ == "__main__":
                 else:
                     print(msg)
                     return
+            except TypeError:
+                return val
             except ValueError:
                 print(msg)
                 return
@@ -192,10 +254,32 @@ if __name__ == "__main__":
             else:
                 return val.decode("utf_8")
 
-        ui.deadline = _check_date(ui.deadline)
-        ui.genre = _decode_utf(ui.genre)
-        ui.subject = _decode_utf(ui.subject)
-        ui.text = _decode_utf(ui.text)
+        try:
+            if ui.deadline:
+                ui.deadline = _check_date(ui.deadline)
+        except AttributeError:
+            pass
+        try:
+            if ui.genre:
+                ui.genre = _decode_utf(ui.genre)
+        except AttributeError:
+            pass
+        try:
+            if ui.subject:
+                ui.subject = _decode_utf(ui.subject)
+        except AttributeError:
+            pass
+        try:
+            if ui.text:
+                ui.text = _decode_utf(ui.text)
+        except AttributeError:
+            pass
+        try:
+            if ui.id_entry:
+                ui.id_entry = int(ui.id_entry)
+        except AttributeError:
+            pass
+            
         return ui
 
 
