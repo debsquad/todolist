@@ -41,7 +41,7 @@ import sys
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Table, Column, Integer, String, Date, DateTime, Boolean
+from sqlalchemy import Table, Column, Integer, String, Boolean, DateTime
 
 from optparse import OptionParser
 
@@ -58,7 +58,11 @@ session = Session()
 
 
 now = datetime.datetime.now()
-today = datetime.datetime.today()
+today = datetime.date.today()
+endoftoday = datetime.datetime(int(today.isoformat()[0:4]),
+                                int(today.isoformat()[5:7]),
+                                int(today.isoformat()[8:]),
+                                23,59,59)
 default_genre="any"
 
 
@@ -66,7 +70,7 @@ class Todo(Base):
     __tablename__ = "todo"
     id = Column(Integer, primary_key=True)
     timestamp = Column(DateTime, default=now) # datetime data enters in
-    deadline = Column(Date, default=today)
+    deadline = Column(DateTime, default=endoftoday)
     genre = Column(String, default="")
     subject = Column(String, default="")
     detail = Column(String, default="")
@@ -78,13 +82,13 @@ class Todo(Base):
         self.deadline = data["deadline"]
         self.genre = data["genre"]
         self.subject = data["subject"]
-        self.detail = data["detail"]
+        self.detail = data["text"]
         self.done = data["done"]
 
     def __repr__(self):
-        return """<Todo('{}','{}','{}','{}','{}','{}')>
-                """.format(self.timestamp, self.deadline, self.genre,
-                        self.subject, self.detail, self.done)
+        return """<Todo('{}','{}','{}','{}','{}','{}','{}')>
+                """.format(self.timestamp, self.deadline, self.genre, 
+                                    self.subject, self.text, self.done)
 
         
 class AddTodoCommand:
@@ -94,17 +98,12 @@ class AddTodoCommand:
     command_name = "add"
 
     def run(self, options):
-        def decode_utf(val):
-            if val is None:
-                return
-            else:
-                return val.decode("utf_8")
 
         values = {
             "deadline": options.deadline,
-            "genre": decode_utf(options.genre),
-            "subject": decode_utf(options.subject),
-            "detail": decode_utf(options.detail),
+            "genre": options.genre,
+            "subject": options.subject,
+            "text": options.text,
             "done": options.done
             }
         pdb.set_trace()
@@ -129,10 +128,10 @@ if __name__ == "__main__":
     def parse_args(command_name, args):
         parser = OptionParser(usage="%prog {}".format(command_name))
 
-        parser.add_option("-e", "--endline", "--deadline",
+        parser.add_option("-d", "--deadline",
                             action="store", type="string", dest="deadline",
-                            default=today,
-                            help="Date of deadline ; format to YYMMDD")
+                            default=endoftoday,
+                            help="Date of deadline ; format to [YY]YYMMDD[-hh[mm[ss]]]")
         parser.add_option("-g", "--genre",
                             action="store", type="string", dest="genre",
                             default=default_genre,
@@ -141,17 +140,17 @@ if __name__ == "__main__":
         parser.add_option("-s", "--subject",
                             action="store", type="string", dest="subject",
                             help="Resume of the thing to do")
-        parser.add_option("-t", "--text", "--detail",
-                            action="store", type="string", dest="detail",
+        parser.add_option("-t", "--text",
+                            action="store", type="string", dest="text",
                             help="Detailled explication of the thing to do")
         parser.add_option("-i", "--id",
                             action="store", type="string", dest="id_entry",
                             help="id of entry you want to handle with")
-        parser.add_option("-d", "--done",
+        parser.add_option("-D", "--done",
                             action="store_true", dest="done", default=False,
                             help="use this option if the thing to do was done")
-        parser.add_option("-u", "--undone",
-                            action="store_false", dest="done", default=True,
+        parser.add_option("-U", "--undone",
+                            action="store_false", dest="done", default=False,
                             help="use this opt if the thing needs to be done")
         parser.add_option("--database",
                             action="store", type="string", dest="database",
@@ -160,6 +159,72 @@ if __name__ == "__main__":
        
         return options, args
  
+    def process_userinput(ui):
+        def _check_date(val):
+            msg = "Date must be in format [YY]YYMMDD[-hh[mm[ss]]] ; deadline default to today 23:59:59"
+            if not val:
+                return
+            try:
+                if len(list(val)) == 6:                     # format YYMMDD
+                    val = datetime.datetime(
+                        int(val[0:2]),int(val[2:4]),int(val[4:]),23,59,59)
+                    return val
+                elif len(list(val)) == 8:                   # format YYYYMMDD
+                    val = datetime.datetime(
+                        int(val[0:4]),int(val[4:6]),int(val[6:]),23,59,59)
+                    return val
+                elif len(list(val)) == 9 and val[6] == "-": # format YYMMDD-hh
+                    val = datetime.datetime(
+                        int(val[0:2]),int(val[2:4]),int(val[4:6]),
+                        int(val[7:]),59,59)
+                    return val
+                elif len(list(val)) == 11 and val[6] == "-": # format YYMMDD-hhmm
+                    val = datetime.datetime(
+                        int(val[0:2]),int(val[2:4]),int(val[4:6]),
+                        int(val[7:9]),int(val[9:]),59)
+                    return val
+                elif len(list(val)) == 13 and val[6] == "-": # format YYMMDD-hhmmss
+                    val = datetime.datetime(
+                        int(val[0:2]),int(val[2:4]),int(val[4:6]),
+                        int(val[7:9]),int(val[9:11]),int(val[11:]))
+                    return val
+                elif len(list(val)) == 11 and val[8] == "-": # format YYYYMMDD-hh
+                    val = datetime.datetime(
+                        int(val[0:4]),int(val[4:6]),int(val[6:8]),
+                        int(val[9:]),59,59)
+                    return val
+                elif len(list(val)) == 13 and val[8] == "-": # format YYYYMMDD-hhmm
+                    val = datetime.datetime(
+                        int(val[0:4]),int(val[4:6]),int(val[6:8]),
+                        int(val[9:11]),int(val[11:]),59)
+                    return val
+                elif len(list(val)) == 15 and val[8] == "-": # format YYYYMMDD-hhmmss
+                    val = datetime.datetime(
+                        int(val[0:4]),int(val[4:6]),int(val[6:8]),
+                        int(val[9:11]),int(val[11:13]),int(val[13:]))
+                    return val
+                else:
+                    print(msg)
+                    return
+            except ValueError:
+                print(msg)
+                return
+
+        def _decode_utf(val):
+            if val is None:
+                return
+            else:
+                return val.decode("utf_8")
+
+        pdb.set_trace()        
+        ui["deadline"] = _check_date(ui.deadline)
+        ui["genre"] = _decode_utf(ui.genre)
+        ui["subject"] = _decode_utf(ui.subject)
+        ui["text"] = _decode_utf(ui.text)
+        pdb.set_trace()
+        return ui
+
+
     #
     # start prog
     #
@@ -185,6 +250,6 @@ if __name__ == "__main__":
     
     # Start parsing args
     (options, args) = parse_args(command_name, args)
-   
+    options = process_userinput(options)
     # run command
     cmd.run(options)
