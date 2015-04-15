@@ -32,8 +32,6 @@ todolist.py return a string with :
 deadline ; subject of todo ; details ; (genre?) ;
 
 """
-import pdb
-
 import datetime
 import os
 import sys
@@ -48,7 +46,7 @@ from optparse import OptionParser
 
 
 
-database_location = os.path.join(os.path.expanduser("~") + "/todotest.sql")
+database_location = os.path.join(os.path.expanduser("~") + "/.todolist.sql")
 Base = declarative_base()
 
 engine = create_engine("sqlite:///{}".format(database_location),
