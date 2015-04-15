@@ -232,22 +232,19 @@ if __name__ == "__main__":
                 month = int(datetime.date.today().month)
                 nextmonth = int(datetime.date.today().month + 1)
 
-                if len(list(val)) == 2:                     # format DD
-                    pdb.set_trace()
+                if len(val) == 2:                     # format DD
                     if int(datetime.date.today().day) > int(val[0:]) and \
-                                datetime.date.today().month() == "12":
+                                datetime.date.today().month == "12":
                         val = datetime.datetime(
                             nextyear, 1, int(val[0:]), 23, 59, 59)
                     elif int(datetime.date.today().day) > int(val[0:]):
-                        pdb.set_trace()
                         val = datetime.datetime(
                             year, nextmonth, int(val[0:]), 23, 59, 59)
                     else:
                         val = datetime.datetime(
                             year, month, int(val[0:]), 23, 59, 59)
-                    pdb.set_trace()
                     return val
-                if len(list(val)) == 4:                     # format MMDD
+                if len(val) == 4:                     # format MMDD
                     if int(datetime.date.today().day) >= int(val[2:]) and\
                             int(datetime.date.today().month) == int(val[0:2]):
                         val = datetime.datetime(
@@ -256,40 +253,40 @@ if __name__ == "__main__":
                         val = datetime.datetime(
                             year, int(val[0:2]), int(val[2:]), 23, 59, 59)
                     return val
-                if len(list(val)) == 6:                     # format YYMMDD
+                if len(val) == 6:                     # format YYMMDD
                     val = datetime.datetime(
                         int("20" + val[0:2]),int(val[2:4]),int(val[4:]),23,59,59)
                     return val
-                elif len(list(val)) == 8:                   # format YYYYMMDD
+                elif len(val) == 8:                   # format YYYYMMDD
                     val = datetime.datetime(
                         int(val[0:4]),int(val[4:6]),int(val[6:]),23,59,59)
                     return val
-                elif len(list(val)) == 9 and val[6] == "-": # format YYMMDD-hh
+                elif len(val) == 9 and val[6] == "-": # format YYMMDD-hh
                     val = datetime.datetime(
                         int("20" + val[0:2]),int(val[2:4]),int(val[4:6]),
                         int(val[7:]),59,59)
                     return val
-                elif len(list(val)) == 11 and val[6] == "-": # format YYMMDD-hhmm
+                elif len(val) == 11 and val[6] == "-": # format YYMMDD-hhmm
                     val = datetime.datetime(
                         int("20" + val[0:2]),int(val[2:4]),int(val[4:6]),
                         int(val[7:9]),int(val[9:]),59)
                     return val
-                elif len(list(val)) == 13 and val[6] == "-": # format YYMMDD-hhmmss
+                elif len(val) == 13 and val[6] == "-": # format YYMMDD-hhmmss
                     val = datetime.datetime(
                         int("20" + val[0:2]),int(val[2:4]),int(val[4:6]),
                         int(val[7:9]),int(val[9:11]),int(val[11:]))
                     return val
-                elif len(list(val)) == 11 and val[8] == "-": # format YYYYMMDD-hh
+                elif len(val) == 11 and val[8] == "-": # format YYYYMMDD-hh
                     val = datetime.datetime(
                         int(val[0:4]),int(val[4:6]),int(val[6:8]),
                         int(val[9:]),59,59)
                     return val
-                elif len(list(val)) == 13 and val[8] == "-": # format YYYYMMDD-hhmm
+                elif len(val) == 13 and val[8] == "-": # format YYYYMMDD-hhmm
                     val = datetime.datetime(
                         int(val[0:4]),int(val[4:6]),int(val[6:8]),
                         int(val[9:11]),int(val[11:]),59)
                     return val
-                elif len(list(val)) == 15 and val[8] == "-": # format YYYYMMDD-hhmmss
+                elif len(val) == 15 and val[8] == "-": # format YYYYMMDD-hhmmss
                     val = datetime.datetime(
                         int(val[0:4]),int(val[4:6]),int(val[6:8]),
                         int(val[9:11]),int(val[11:13]),int(val[13:]))
