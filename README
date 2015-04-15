@@ -1,6 +1,14 @@
 The todolist python script helps you handle a database of things to do.
 
-The todolist table is :
+usage : 
+
+todolist add -h
+todolist list -h
+todolist update -h
+
+
+
+The Todo database_table is :
 id | timestamp | deadline | genre | subject | detail | done
 
 id : unique id primary key of database entry
