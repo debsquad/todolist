@@ -180,7 +180,7 @@ if __name__ == "__main__":
         def add_update_args():
             parser.add_option("-d", "--deadline",
                                 action="store", type="string", dest="deadline",
-                                default=end_of_today,
+                                default=None,
                                 help="Date of deadline ; format to [YY]YYMMDD[-hh[mm[ss]]]")
             parser.add_option("-s", "--subject",
                                 action="store", type="string", dest="subject",
