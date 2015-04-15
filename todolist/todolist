@@ -57,7 +57,7 @@ endoftoday = datetime.datetime(int(today.isoformat()[0:4]),
                                 int(today.isoformat()[5:7]),
                                 int(today.isoformat()[8:]),
                                 23,59,59)
-default_genre="any"
+default_genre="default"
 
 
 class Todo(Base):
@@ -121,6 +121,11 @@ class ListTodoCommand:
     def run(self, session, options):
         query = session.query(Todo)
         query = query.order_by(Todo.deadline)
+        try:
+            if options.genre:
+                query = query.filter(Todo.genre == options.genre)
+        except AttributeError:
+            pass
         query = query.all()
         for u in query:
             print("{}, {}, {}, {}, {}".format(u.id, u.deadline, u.genre, 
