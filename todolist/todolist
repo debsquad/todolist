@@ -38,6 +38,7 @@ import datetime
 import os
 import sys
 
+import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -47,12 +48,12 @@ from optparse import OptionParser
 
 
 
-database_location = os.path.join(os.path.expanduser("~") + "todotest.sql")
+database_location = os.path.join(os.path.expanduser("~") + "/todotest.sql")
 Base = declarative_base()
 
 engine = create_engine("sqlite:///{}".format(database_location),
                                  echo=False, convert_unicode=True)
-Base.metadata.create_all(engine)
+#Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
@@ -73,23 +74,23 @@ class Todo(Base):
     deadline = Column(DateTime, default=endoftoday)
     genre = Column(String, default="")
     subject = Column(String, default="")
-    detail = Column(String, default="")
+    text = Column(String, default="")
     done = Column(Boolean, default=False)
 
-    def __init__(self, data):
-        """ data is dictionnary issued by optparsing user entry """
-        self.timestamp = now
-        self.deadline = data["deadline"]
-        self.genre = data["genre"]
-        self.subject = data["subject"]
-        self.detail = data["text"]
-        self.done = data["done"]
-
-    def __repr__(self):
-        return """<Todo('{}','{}','{}','{}','{}','{}','{}')>
-                """.format(self.timestamp, self.deadline, self.genre, 
-                                    self.subject, self.text, self.done)
-
+#    def __init__(self, data):
+#        """ data is dictionnary issued by optparsing user entry """
+#        self.timestamp = now
+#        self.deadline = data["deadline"]
+#        self.genre = data["genre"]
+#        self.subject = data["subject"]
+#        self.text = data["text"]
+#        self.done = data["done"]
+#
+#    def __repr__(self):
+#        return """<Todo('{}','{}','{}','{}','{}','{}','{}')>
+#                """.format(self.timestamp, self.deadline, self.genre, 
+#                                    self.subject, self.text, self.done)
+#
         
 class AddTodoCommand:
     """
@@ -106,7 +107,6 @@ class AddTodoCommand:
             "text": options.text,
             "done": options.done
             }
-        pdb.set_trace()
         try:
             new_entry = Todo(**values)
             session.add(new_entry)
@@ -152,9 +152,9 @@ if __name__ == "__main__":
         parser.add_option("-U", "--undone",
                             action="store_false", dest="done", default=False,
                             help="use this opt if the thing needs to be done")
-        parser.add_option("--database",
-                            action="store", type="string", dest="database",
-                            help="use alternate database")
+#        parser.add_option("--database",
+#                            action="store", type="string", dest="database",
+#                            help="use alternate database")
         (options,args) = parser.parse_args(args)
        
         return options, args
@@ -227,6 +227,9 @@ if __name__ == "__main__":
     # start prog
     #
     # verify if command_name exists and is correct ; exit on error
+    if not os.path.exists(database_location):
+        Base.metadata.create_all(engine)
+    
     try:
         command_name = sys.argv[1]
         commands = {
