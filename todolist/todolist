@@ -72,7 +72,6 @@ class Todo(Base):
     text = Column(String, default="")
     done = Column(Boolean, default=False)
 
-       
 class AddTodoCommand:
     """
         Adding new todo in database
@@ -96,6 +95,7 @@ class AddTodoCommand:
             session.commit()
             return True
         except sqlalchemy.exc.IntegrityError:
+            print("Error while adding data")
             return False
 
 class ListTodoCommand:
@@ -136,7 +136,27 @@ class ListTodoCommand:
 
 
 class UpdateTodoCommand:
-    pass
+    command_name = "update"
+
+    def run(self, session, options):
+        query = session.query(Todo)
+        try:
+            to_update = query.filter(Todo.id == options.id_entry).one()
+        except sqlalchemy.orm.exc.NoResultFound:
+           print("Todo id doesn't exist")
+        
+        if options.done:
+            to_update.done = options.done
+        if options.deadline:
+            to_update.deadline = options.deadline
+        if options.subject:
+            to_update.subject = options.subject
+        if options.text:
+            to_update.text = options.text
+        if options.genre:
+            to_update.genre = options.genre
+
+        session.commit()
 
 
 if __name__ == "__main__":
