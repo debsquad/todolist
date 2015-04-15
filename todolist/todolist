@@ -117,7 +117,8 @@ class ListTodoCommand:
     command_name = "list"
 
     def run(self, session, options):
-        pass
+        pdb.set_trace()
+        pass 
 
 
 class UpdateTodoCommand:
@@ -229,16 +230,26 @@ if __name__ == "__main__":
             else:
                 return val.decode("utf_8")
 
-        if ui.deadline:
+        try:
             ui.deadline = _check_date(ui.deadline)
-        if ui.genre:    
+        except AttributeError:
+            pass
+        try:
             ui.genre = _decode_utf(ui.genre)
-        if ui.subject:
+        except AttributeError:
+            pass
+        try:
             ui.subject = _decode_utf(ui.subject)
-        if ui.text:
+        except AttributeError:
+            pass
+        try:
             ui.text = _decode_utf(ui.text)
-        if ui.id_entry:
+        except AttributeError:
+            pass
+        try:
             ui.id_entry = int(ui.id_entry)
+        except AttributeError:
+            pass
             
         return ui
 
