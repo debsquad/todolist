@@ -74,20 +74,6 @@ class Todo(Base):
     text = Column(String, default="")
     done = Column(Boolean, default=False)
 
-#    def __init__(self, data):
-#        """ data is dictionnary issued by optparsing user entry """
-#        self.timestamp = now
-#        self.deadline = data["deadline"]
-#        self.genre = data["genre"]
-#        self.subject = data["subject"]
-#        self.text = data["text"]
-#        self.done = data["done"]
-#
-#    def __repr__(self):
-#        return """<Todo('{}','{}','{}','{}','{}','{}','{}')>
-#                """.format(self.timestamp, self.deadline, self.genre, 
-#                                    self.subject, self.text, self.done)
-#
         
 class AddTodoCommand:
     """
@@ -168,7 +154,7 @@ if __name__ == "__main__":
         def add_update_args():
             parser.add_option("-d", "--deadline",
                                 action="store", type="string", dest="deadline",
-                                default=endoftoday,
+                                default=end_of_today,
                                 help="Date of deadline ; format to [YY]YYMMDD[-hh[mm[ss]]]")
             parser.add_option("-s", "--subject",
                                 action="store", type="string", dest="subject",
