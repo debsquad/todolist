@@ -149,7 +149,7 @@ class ListTodoCommand:
         for u in query:
             if mod_pt:
                 pt.add_row([u.id, u.deadline, u.genre.encode("utf_8"), 
-                        u.subject.encode("utf_8"), u.subject.encode("utf_8")])
+                        u.subject.encode("utf_8"), u.text.encode("utf_8")])
             else:
                 print("{}, {}, {}, {}, {}".format(u.id, u.deadline, 
                                                 u.genre.encode("utf_8"),
