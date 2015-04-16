@@ -45,6 +45,13 @@ from sqlalchemy import and_
 
 from optparse import OptionParser
 
+try:
+    from prettytable import PrettyTable
+    mod_pt = True
+except ImportError:
+    pass
+    
+
 
 Base = declarative_base()
 
@@ -133,11 +140,20 @@ class ListTodoCommand:
 
         query = query.order_by(Todo.deadline)
         query = query.all()
+
+        if mod_pt:
+            pt = PrettyTable(["id", "deadline", "genre", "subject", "text"])
         for u in query:
-            print("{}, {}, {}, {}, {}".format(u.id, u.deadline, 
+            if mod_pt:
+                pt.add_row([u.id, u.deadline, u.genre.encode("utf_8"), 
+                        u.subject.encode("utf_8"), u.subject.encode("utf_8")])
+            else:
+                print("{}, {}, {}, {}, {}".format(u.id, u.deadline, 
                                                 u.genre.encode("utf_8"),
                                                 u.subject.encode("utf_8"),
                                                 u.text.encode("utf_8")))
+        if mod_pt:
+            print(pt)
 
 
 class UpdateTodoCommand:
